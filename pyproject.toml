@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ti-83emulator"
+version = "0.1.0"
+description = ""
+authors = ["ventura94 <arianventura94@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ti_83emulator"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+keyboard = "^0.13.5"
+pygame = "^2.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
