@@ -6,6 +6,14 @@ from src.ram import VirtualMemory
 from src.singleton import Singleton
 
 
+class LCDController(Singleton):
+    def __init__(self):
+        self.screen = LCDScreen()
+
+    def execute_instruction(self, hex_op: int):
+        self.screen.write_byte(0, 0, hex_op)
+
+
 class LCDScreen(Singleton):
     WIDTH = 96
     HEIGHT = 64
@@ -33,6 +41,19 @@ class LCDScreen(Singleton):
         else:
             current_byte |= (1 << (7 - bit_index))
         self.buffer.write(self.INIT_BUFFER_ADDRESS + byte_index, current_byte)
+        self.draw()
+
+    def write_byte(self, x, y, byte_value):
+        if not (0x00 <= byte_value <= 0xFF):
+            raise ValueError("El byte_value debe estar entre 0x00 y 0xFF")
+        if x % 8 != 0:
+            raise ValueError("La columna x debe ser múltiplo de 8 para escribir un byte completo")
+        if x < 0 or x >= self.WIDTH or y < 0 or y >= self.HEIGHT:
+            raise ValueError("Coordenadas fuera del rango de la pantalla")
+        byte_index = y * self.bytes_per_row + (x // 8)
+        memory_address = self.INIT_BUFFER_ADDRESS + byte_index
+        self.buffer.write(memory_address, byte_value)
+        self.draw()
 
     def get_pixel(self, x, y):
         if x < 0 or x >= self.WIDTH or y < 0 or y >= self.HEIGHT:

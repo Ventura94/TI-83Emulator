@@ -1,19 +1,23 @@
-from src.ports.screen import LCDScreen
+from abc import ABC, abstractmethod
+
+from src.ports.screen import LCDController
 from src.singleton import Singleton
 
 
-class OUTPortBase:
+class OUTPortBase(ABC):
     hex_op = None
 
-    def send(self, in_register: None):
+    @abstractmethod
+    def send(self, hex_op: int):
         pass
 
 
 class OUTScreenPort(OUTPortBase):
     hex_op = hex(0x06)
 
-    def execute(self, in_register: None):
-        lcd = LCDScreen()
+    def send(self, hex_op: int):
+        lcd_controller = LCDController()
+        lcd_controller.execute_instruction(hex_op)
 
 
 class OUTPorts(Singleton):
@@ -24,7 +28,7 @@ class OUTPorts(Singleton):
     def __init__(self):
         self.ports_mapper = {port.hex_op: port for port in self.PORTS}
 
-    def get_port(self, hex_op):
+    def get_port_by_hex(self, hex_op):
         port = self.ports_mapper.get(hex_op)
         if port:
             return port()
